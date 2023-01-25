@@ -107,7 +107,7 @@ class MainRoute {
           name: "common-test",
           // 1
           path:
-              '/test/:tab(${practiceMenuCommon.map((e) => e.destination).toList().join('|')})',
+              '/:tab(${practiceMenuCommon.map((e) => e.destination).toList().join('|')})',
           pageBuilder: (context, state) {
             // 2
             final tab = state.params['tab']!;
@@ -124,11 +124,12 @@ class MainRoute {
             GoRoute(
               name: "test-detail",
               // 4
-              path: 'details/:item',
+              path: 'cambridgeIelts/:item',
               pageBuilder: (context, state) => MaterialPage<void>(
                 key: state.pageKey,
                 // 5
-                child: IeltsTestDetail(description: state.params['item']!),
+                child: IeltsTestDetail(
+                    bookNumber: int.parse(state.params['item']!)),
               ),
             ),
             // GoRoute(
