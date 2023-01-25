@@ -1,16 +1,22 @@
 class IeltsTestModel {
   late String key;
-  late String name;
-  late IeltsSection sectionType;
+  late String bookName;
+  late int bookNumber;
+  late String sectionType;
   late List<IeltsQuestion> answerSheet;
   late DateTime writeDate;
 
-  IeltsTestModel(this.name, this.sectionType, this.answerSheet, this.writeDate);
+  IeltsTestModel(this.bookName, this.bookNumber, this.sectionType,
+      this.answerSheet, this.writeDate);
   factory IeltsTestModel.fromRTDB(Map<String, dynamic> data) {
     return IeltsTestModel(
-        data['name'],
-        data['sectionType'],
-        data['answerSheet'],
+        data['bookName'],
+        data['bookNumber'],
+        data['section'],
+        // data['answerSheet'],
+        (data['answerSheet'] as List)
+            .map((e) => IeltsQuestion.fromRTDB(e))
+            .toList(),
         data['time'] != null
             ? DateTime.fromMicrosecondsSinceEpoch(data['time'])
             : DateTime.now());
@@ -35,8 +41,8 @@ class IeltsQuestion {
   late int? groupQuestionEndNumber;
   late AnswerType answerType;
   late String questionContent;
-  late List<String> answerChoice;
-  late List<String> answers;
+  late List answerChoice;
+  late List answers;
 
   late DateTime writeDate;
   IeltsQuestion.empty();
@@ -56,7 +62,7 @@ class IeltsQuestion {
       data['isGroup'],
       data['questionNumber'],
       data['groupQuestionEndNumber'],
-      data['answerType'],
+      AnswerType.values.byName(data['answerType']),
       data['questionContent'],
       data['answerChoice'],
       data['answers'],

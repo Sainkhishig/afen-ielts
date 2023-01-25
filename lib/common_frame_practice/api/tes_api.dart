@@ -1,3 +1,4 @@
+import 'package:afen_ielts/pages/grammar/model/ielts_test_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:afen_ielts/common_frame_practice/common_model/test_result_model.dart';
 import 'package:afen_ielts/common_frame_practice/vocabulary/model/vocabulary_model.dart';
@@ -20,6 +21,27 @@ class CommonTestAPI {
   //   });
   //   return lstTest;
   // }
+
+  Future<List<IeltsTestModel>> getCambridgeIeltsSheetData(
+      int bookNumber) async {
+    print("get:book:$bookNumber");
+    var ref = _database.child("/IeltsAnswerSheet");
+    var rtdb = await ref.orderByChild("bookNumber").equalTo(bookNumber).once();
+
+    print("bookNumber5");
+    print(rtdb.value);
+    if (rtdb.value == null) return [];
+    final rtdbVal = Map<String, dynamic>.from(rtdb.value);
+
+    List<IeltsTestModel> lstTest = [];
+    rtdbVal.forEach((keyUser, value) {
+      final testResult =
+          IeltsTestModel.fromRTDB(Map<String, dynamic>.from(value));
+      lstTest.add(testResult);
+    });
+
+    return lstTest; //.where((element) => element.bookNumber == level).toList();
+  }
 
   Future<List<TestResultModel>> getReadingTestResult(userId, level) async {
     var ref = _database.child("/UserTestResult");
