@@ -1,5 +1,5 @@
-import 'package:afen_ielts/classes/answer_sheet.dart';
 import 'package:afen_ielts/common/common_providers/shared_preferences_provider.dart';
+import 'package:afen_ielts/common/common_widget.dart';
 import 'package:afen_ielts/common/menu.dart';
 import 'package:afen_ielts/pages/grammar/model/ielts_test_model.dart';
 import 'package:go_router/go_router.dart';
@@ -106,7 +106,9 @@ class HomeScreen extends HookConsumerWidget {
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
-              onPressed: pickExcel,
+              onPressed: () {
+                pickExcel(context);
+              },
               child: const SizedBox(
                   width: 120,
                   child: Text(
@@ -149,7 +151,7 @@ class HomeScreen extends HookConsumerWidget {
     );
   }
 
-  Future<void> pickExcel() async {
+  Future<void> pickExcel(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     print("resultAri");
     if (result != null) {
@@ -157,7 +159,11 @@ class HomeScreen extends HookConsumerWidget {
 
       PlatformFile file = result.files.first;
       var excel = Excel.decodeBytes(file.bytes!);
-      readExcel(excel);
+      await readExcel(excel)
+          .then((value) => {showSuccessToastMessage(context, "amjilltai")})
+          .onError((error, stackTrace) =>
+              {showErrorToastMessage(context, "aldaa garlaa")});
+
       // for (var element in excel.sheets.values) {
       //   print(element.sheetName);
       //   for (var i = 1; i < excel.tables[element.sheetName]!.rows.length; i++) {
@@ -204,13 +210,14 @@ class HomeScreen extends HookConsumerWidget {
 
     for (var file in excel.sheets.values
         .where((element) => element.sheetName.startsWith("Cambridge"))) {
-      var sheetName = file.sheetName.split("-")[0];
-      var sectionName = file.sheetName.split("-")[1];
+      // var sheetName = file.sheetName.split("-")[1];
+      var bookNumber = file.sheetName.split("-")[1];
+      var sectionName = file.sheetName.split("-")[2];
       print(sectionName);
       List<IeltsQuestion> lstQUestion = [];
       for (var i = 0; i < excel.tables[file.sheetName]!.rows.length; i++) {
         var row = excel.tables[file.sheetName]!.rows[i];
-        print("row:${getCellValue(row[0])!}");
+        print("row:${getCellValue(row[7])}");
         // int trueAnswerIndex = int.parse(getCellValue(row[5]));
         // var cambridgeIeltsIndex = getCellValue(row[0]);
         var question = IeltsQuestion.empty()
@@ -226,9 +233,14 @@ class HomeScreen extends HookConsumerWidget {
           ..answerChoice = getCellValue(row[6]).split(";")
           ..answers = getCellValue(row[7]).split(";");
         lstQUestion.add(question);
+        print("answers");
+        print(getCellValue(row[7]));
+        print(getCellValue(row[8]));
 
+        print(question.answers);
         final newData = <String, dynamic>{
-          'cambridgeIelts': sheetName,
+          'bookName': file.sheetName,
+          'bookNumber': int.parse(bookNumber),
           'section': sectionName,
           'answerSheet': lstQUestion.map((question) => {
                 'section': question.section,

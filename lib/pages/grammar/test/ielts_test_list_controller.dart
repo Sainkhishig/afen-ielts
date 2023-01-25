@@ -1,12 +1,10 @@
 import 'dart:math';
 
-import 'package:afen_ielts/classes/answer_sheet.dart';
+import 'package:afen_ielts/common_frame_practice/api/tes_api.dart';
 import 'package:afen_ielts/pages/grammar/test/ielts_test_list_state.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:excel/excel.dart';
 
 final ieltsTestListController =
     StateNotifierProvider<IeltsTestListController, IeltsTestListState>(
@@ -34,18 +32,19 @@ class IeltsTestListController extends StateNotifier<IeltsTestListState> {
 
   //#endregion ==================== constructor ====================
 
-  Future<void> setGrammarList() async {
-    // var lstIeltsTestList =
-    //     await CommonTestAPI().getIeltsTestList(prefs.getInt("jlptLevel") ?? 5);
-    // if (lstIeltsTestList.isNotEmpty) {
-    //   var selectedTesIndex =
-    //       loginState.loggedIn ? 0 : getSlectedTestIndex(lstIeltsTestList);
-    //   state = state.copyWith(
-    //       grammarTestSource: lstIeltsTestList,
-    //       selectedTestIndex: selectedTesIndex);
-    // } else {
-    //   state = state.copyWith(grammarTestSource: [], selectedTestIndex: 0);
-    // }
+  Future<void> getTestSource(int bookNumber) async {
+    var lstIeltsTestList =
+        await CommonTestAPI().getCambridgeIeltsSheetData(bookNumber);
+    if (lstIeltsTestList.isNotEmpty) {
+      print("notEmpt");
+      // var selectedTesIndex =
+      //     loginState.loggedIn ? 0 : getSlectedTestIndex(lstIeltsTestList);
+      state = state.copyWith(ieltsTestSource: lstIeltsTestList);
+      //,selectedTestIndex: selectedTesIndex);
+    } else {
+      print("empty");
+      state = state.copyWith(ieltsTestSource: [], selectedTestIndex: 0);
+    }
   }
 
   Future<void> sendTestResult(testResult) async {
