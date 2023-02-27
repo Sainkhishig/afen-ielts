@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:afen_ielts/common/widget/afen_text_field.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_multi_check_box.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_single_selection_rb.dart';
@@ -8,6 +10,110 @@ import 'package:flutter/material.dart';
 import 'package:afen_ielts/pages/grammar/test/ielts_test_list_controller.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+class Blank extends StatelessWidget {
+  final String answer;
+  String answerHint = "";
+  String value = "";
+  Blank(this.answer);
+  String hint = "";
+  @override
+  Widget build(BuildContext context) {
+    print("answer:$answer");
+    return SizedBox(
+      height: 65,
+      width: 200,
+      child: AfenTextField(
+        hint,
+        onValueChanged: (text) {
+          value = text;
+        },
+        // decoration: InputDecoration(hintText: hint),
+      ),
+    );
+  }
+}
+
+class TextWithBlanks extends StatelessWidget {
+  final String text;
+  static final regex = RegExp("(?={)|(?<=})");
+
+  const TextWithBlanks({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // List<DropdownMenuItem<BlogType>> getDropItems() {
+    //   List<DropdownMenuItem<BlogType>> lstDropItem = BlogType.values
+    //       .map((e) => DropdownMenuItem<BlogType>(
+    //           alignment: AlignmentDirectional.center,
+    //           value: e,
+    //           child: Text(
+    //             e.name,
+    //             textAlign: TextAlign.center,
+    //           )))
+    //       .toList();
+    //   return lstDropItem;
+    // }
+
+    // LineSplitter ls = new LineSplitter();
+    // List<String> _masForUsing = ls.convert(text);
+    // print("_masForUsing:${_masForUsing.length}");
+    // List _smasForUsing = text.split("\n");
+    // print("_masForUsing2:${_smasForUsing.length}");
+
+    final split = text.split(regex);
+    print("split:$split");
+    // BlogType category = BlogType.japanese;
+    return Text.rich(
+      TextSpan(
+        children: <InlineSpan>[
+          for (String text in split)
+            text.startsWith('{')
+                ? WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.middle,
+                    child: Blank(text.substring(1, text.length - 1))
+                    //       Padding(
+                    //   padding: EdgeInsets.only(
+                    //     top: 30,
+                    //   ),
+                    //   child: Blank(text.substring(1, text.length - 1)),
+                    // )
+                    // Transform.translate(
+                    //     offset: const Offset(0.0, 17.0),
+                    //     child: Blank(text.substring(1, text.length - 1))),
+                    )
+                :
+                // WidgetSpan(
+                //     child: Transform.translate(
+                //         offset: const Offset(0.0, -37.0),
+                //         child: Blank(text.substring(1, text.length - 1))),
+                //   )
+                TextSpan(
+                    text: text,
+                  ),
+          //  WidgetSpan(
+          //     child: Padding(
+          //         padding: const EdgeInsets.only(bottom: 0),
+          //         child: Text(text)
+          //         // TextSpan(
+          //         //   text: text,
+          //         // ),
+          //         ))
+        ],
+      ),
+    );
+    //  RichText(
+    //     text: TextSpan(
+    //   children: <InlineSpan>[
+    //     for (String text in split)
+    //       text.startsWith('{')
+    //           ? WidgetSpan(child: Blank(text.substring(1, text.length - 1)))
+    //           : TextSpan(text: text),
+    //   ],
+    // ));
+  }
+}
 
 // pyfm061 : キャンセル規定編集
 class IeltsTestDetail extends HookConsumerWidget {
@@ -57,8 +163,10 @@ class IeltsTestDetail extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("${question.questionNumber}: " +
-                              question.questionContent),
+                          question.answerType == AnswerType.typeAhead
+                              ? TextWithBlanks(text: question.questionContent)
+                              : Text("${question.questionNumber}: " +
+                                  question.questionContent),
                           getAnswerWidget(
                               questionWidgets[question.questionNumber])
                           // questionWidgets[question.questionNumber]!
@@ -121,6 +229,7 @@ class IeltsTestDetail extends HookConsumerWidget {
       case AnswerType.singleSelect:
         return answerChoice.singleSelectController;
       default:
+        return SizedBox();
     }
   }
 
@@ -128,6 +237,8 @@ class IeltsTestDetail extends HookConsumerWidget {
     if (answerChoice == null) return [];
 
     switch (answerChoice.answerType) {
+      case AnswerType.typeAhead:
+        return [answerChoice.filledAnswerController.controller.text.trim()];
       case AnswerType.fill:
         return [answerChoice.filledAnswerController.controller.text.trim()];
       case AnswerType.multiChoice:
@@ -135,7 +246,7 @@ class IeltsTestDetail extends HookConsumerWidget {
       case AnswerType.singleSelect:
         return [answerChoice.singleSelectController.selectedAnswer];
       default:
-        return [];
+        return [""];
     }
   }
   // getQueustionMode(IeltsQuestion question) {}

@@ -215,7 +215,7 @@ class HomeScreen extends HookConsumerWidget {
       var sectionName = file.sheetName.split("-")[2];
       print(sectionName);
       List<IeltsQuestion> lstQUestion = [];
-      for (var i = 0; i < excel.tables[file.sheetName]!.rows.length; i++) {
+      for (var i = 1; i < excel.tables[file.sheetName]!.rows.length; i++) {
         var row = excel.tables[file.sheetName]!.rows[i];
         print("row:${getCellValue(row[7])}");
         // int trueAnswerIndex = int.parse(getCellValue(row[5]));
@@ -235,7 +235,7 @@ class HomeScreen extends HookConsumerWidget {
         lstQUestion.add(question);
         print("answers");
         print(getCellValue(row[7]));
-        print(getCellValue(row[8]));
+        // print(getCellValue(row[8]));
 
         print(question.answers);
         final newData = <String, dynamic>{

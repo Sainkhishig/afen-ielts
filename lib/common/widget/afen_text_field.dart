@@ -9,7 +9,7 @@ class AfenTextField extends HookConsumerWidget {
   }) : super(key: key);
 
   /// 検索機能
-  final VoidCallback? onValueChanged;
+  Function(String)? onValueChanged;
   final String lablel;
 
   TextEditingController controller = TextEditingController();
@@ -28,6 +28,9 @@ class AfenTextField extends HookConsumerWidget {
                     flex: 1,
                     child: TextFormField(
                       controller: controller,
+                      onChanged: (value) {
+                        onValueChanged!.call(value);
+                      },
                       autofocus: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),

@@ -31,7 +31,7 @@ class IeltsTestModel {
 // 5 What types of films does Louise like?
 // 6 A Action;B Comedies;C Musicals;D Romance;E Westerns;F Wildlife
 // 7 true answer
-enum AnswerType { singleSelect, multiChoice, fill }
+enum AnswerType { singleSelect, multiChoice, fill, typeAhead }
 enum IeltsSection { listening, reading, writing }
 
 class IeltsQuestion {
