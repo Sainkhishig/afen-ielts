@@ -5,6 +5,12 @@ import 'package:afen_ielts/pages/grammar/test/ielts_test_list_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // pyfm061 : キャンセル規定編集
+/*
+Questions 9 and 10
+Write NO MORE THAN THREE WORDS for each answer.
+9 How much does it cost to join the library?
+10 When will Louise's card be ready
+ */
 class IeltsTestList extends HookConsumerWidget {
   const IeltsTestList({Key? key}) : super(key: key);
   @override

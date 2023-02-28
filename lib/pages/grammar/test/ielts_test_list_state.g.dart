@@ -11,6 +11,7 @@ _$_IeltsTestListState _$$_IeltsTestListStateFromJson(
     _$_IeltsTestListState(
       tags: json['tags'] as List<dynamic>? ?? [],
       ieltsTestSource: json['ieltsTestSource'] as List<dynamic>? ?? [],
+      ciTestSource: json['ciTestSource'] as List<dynamic>? ?? [],
       selectedId: json['selectedId'] as String? ?? null,
       selectedTestIndex: json['selectedTestIndex'] as int? ?? 0,
     );
@@ -20,6 +21,7 @@ Map<String, dynamic> _$$_IeltsTestListStateToJson(
     <String, dynamic>{
       'tags': instance.tags,
       'ieltsTestSource': instance.ieltsTestSource,
+      'ciTestSource': instance.ciTestSource,
       'selectedId': instance.selectedId,
       'selectedTestIndex': instance.selectedTestIndex,
     };

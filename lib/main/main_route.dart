@@ -1,6 +1,7 @@
 //TODO https://www.kodeco.com/28987851-flutter-navigator-2-0-using-go_router#toc-anchor-012
 import 'package:afen_ielts/common/common_page/student_comment.dart';
 import 'package:afen_ielts/common/menu.dart';
+import 'package:afen_ielts/pages/grammar/test/cambridge_ielts_test.dart';
 import 'package:afen_ielts/pages/grammar/test/ielts_test_detail.dart';
 import 'package:afen_ielts/pages/grammar/test/ielts_test_list.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +129,7 @@ class MainRoute {
               pageBuilder: (context, state) => MaterialPage<void>(
                 key: state.pageKey,
                 // 5
-                child: IeltsTestDetail(
+                child: CambridgeIeltsTest(
                     bookNumber: int.parse(state.params['item']!)),
               ),
             ),

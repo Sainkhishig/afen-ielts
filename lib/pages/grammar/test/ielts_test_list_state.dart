@@ -8,6 +8,7 @@ abstract class IeltsTestListState with _$IeltsTestListState {
   const factory IeltsTestListState({
     @Default([]) List tags,
     @Default([]) List ieltsTestSource,
+    @Default([]) List ciTestSource,
     @Default(null) String? selectedId,
     @Default(0) int selectedTestIndex,
     // @Default(PlanType.lodging) PlanType planType,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:afen_ielts/common/common_providers/shared_preferences_provider.dart';
 import 'package:afen_ielts/common/common_widget.dart';
 import 'package:afen_ielts/common/menu.dart';
@@ -159,10 +161,15 @@ class HomeScreen extends HookConsumerWidget {
 
       PlatformFile file = result.files.first;
       var excel = Excel.decodeBytes(file.bytes!);
-      await readExcel(excel)
+
+      await readExcelNew(excel)
           .then((value) => {showSuccessToastMessage(context, "amjilltai")})
           .onError((error, stackTrace) =>
               {showErrorToastMessage(context, "aldaa garlaa")});
+      // await readExcel(excel)
+      //     .then((value) => {showSuccessToastMessage(context, "amjilltai")})
+      //     .onError((error, stackTrace) =>
+      //         {showErrorToastMessage(context, "aldaa garlaa")});
 
       // for (var element in excel.sheets.values) {
       //   print(element.sheetName);
@@ -267,6 +274,83 @@ class HomeScreen extends HookConsumerWidget {
     }
   }
 
+  Future readExcelNew(Excel excel) async {
+    final _database = FirebaseDatabase.instance.reference();
+    Map<String, dynamic> newData = {};
+    Map<int, List<String>> answerKeys = {};
+    String sectionName = "";
+    String bookNumber = "";
+    String bookName = "";
+    LineSplitter lineSplitter = new LineSplitter();
+    for (var file in excel.sheets.values) {
+      // .where((element) => element.sheetName.startsWith("Cambridge"))) {
+      if (file.sheetName.startsWith("Answer")) {
+        // for (var i = 1; i < excel.tables[file.sheetName]!.rows.length; i++) {
+        //   var row = excel.tables[file.sheetName]!.rows[i];
+        //   LineSplitter ls = const LineSplitter();
+        //   // List<String> lines = ls.convert(text);
+
+        //   answerKeys[i] = ls.convert(getCellValue(row[0]));
+        // }
+      } else {
+        // var sheetName = file.sheetName.split("-")[1];
+        bookName = file.sheetName;
+        bookNumber = file.sheetName.split("-")[1];
+        sectionName = file.sheetName.split("-")[2];
+        print(sectionName);
+        List<IeltsTestQuestion> lstQUestion = [];
+// Section	question	sq	eq	instruction	answerType	answerChoice
+
+        for (var i = 1; i < excel.tables[file.sheetName]!.rows.length; i++) {
+          var row = excel.tables[file.sheetName]!.rows[i];
+          // print("row:${getCellValue(row[7])}");
+          // int trueAnswerIndex = int.parse(getCellValue(row[5]));
+          // var cambridgeIeltsIndex = getCellValue(row[0]);
+          var question = IeltsTestQuestion.empty()
+            ..section = getCellValue(row[0])
+            ..questionContent = getCellValue(row[1])
+            ..sq = int.parse(getCellValue(row[2]))
+            ..eq = int.parse(getCellValue(row[3]))
+            ..instruction = getCellValue(row[4])
+            ..answerType = AnswerType.values.byName(getCellValue(row[5]))
+            ..answerChoice = lineSplitter.convert(getCellValue(row[6]))
+            ..answers = answerKeys;
+          lstQUestion.add(question);
+          print("answers");
+          // print(getCellValue(row[7]));
+          // print(getCellValue(row[8]));
+
+          print(question.answers);
+          newData = <String, dynamic>{
+            'bookName': file.sheetName,
+            'bookNumber': int.parse(bookNumber),
+            'section': sectionName,
+            'answerSheet': lstQUestion.map((question) => {
+                  'section': question.section,
+                  'question': question.questionContent,
+                  'instruction': question.instruction,
+                  'sq': question.sq,
+                  'eq': question.eq,
+                  'answerType': question.answerType.name,
+                  'answerChoice': question.answerChoice,
+                  'answers': question.answers
+                }),
+            'time': DateTime.now().microsecondsSinceEpoch
+          };
+        }
+      }
+    }
+
+    await _database
+        .child('CambridgeIeltsTest')
+        .push()
+        .set(newData)
+        .catchError((onError) {
+      print('could not saved data');
+      throw ("aldaa garlaa");
+    });
+  }
+
   movePracticeCommonPage(context, int jlptLevel) {
     print("testlevel:$jlptLevel");
     switch (jlptLevel) {
@@ -300,3 +384,8 @@ String getCellValue(Data? row) {
           ? ""
           : "${row.value}";
 }
+/*
+
+
+
+ */

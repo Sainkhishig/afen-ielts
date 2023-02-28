@@ -47,6 +47,21 @@ class IeltsTestListController extends StateNotifier<IeltsTestListState> {
     }
   }
 
+  Future<void> getIeltsTestSource(int bookNumber) async {
+    var lstIeltsTestList =
+        await CommonTestAPI().getCambridgeIeltsTestData(bookNumber);
+    if (lstIeltsTestList.isNotEmpty) {
+      print("notEmpt");
+      // var selectedTesIndex =
+      //     loginState.loggedIn ? 0 : getSlectedTestIndex(lstIeltsTestList);
+      state = state.copyWith(ciTestSource: lstIeltsTestList);
+      //,selectedTestIndex: selectedTesIndex);
+    } else {
+      print("empty");
+      state = state.copyWith(ciTestSource: [], selectedTestIndex: 0);
+    }
+  }
+
   Future<void> sendTestResult(testResult) async {
     final newData = <String, dynamic>{
       'userId': prefs.getString("userId"),

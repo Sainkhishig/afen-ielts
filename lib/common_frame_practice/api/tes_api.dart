@@ -29,7 +29,7 @@ class CommonTestAPI {
     var rtdb = await ref.orderByChild("bookNumber").equalTo(bookNumber).once();
 
     print("bookNumber5");
-    print(rtdb.value);
+    // print(rtdb.value);
     if (rtdb.value == null) return [];
     final rtdbVal = Map<String, dynamic>.from(rtdb.value);
 
@@ -37,6 +37,29 @@ class CommonTestAPI {
     rtdbVal.forEach((keyUser, value) {
       final testResult =
           IeltsTestModel.fromRTDB(Map<String, dynamic>.from(value));
+
+      lstTest.add(testResult);
+    });
+
+    return lstTest; //.where((element) => element.bookNumber == level).toList();
+  }
+
+  Future<List<CambridgeIeltsTestModel>> getCambridgeIeltsTestData(
+      int bookNumber) async {
+    print("get:book:$bookNumber");
+    var ref = _database.child("/CambridgeIeltsTest");
+    var rtdb = await ref.orderByChild("bookNumber").equalTo(bookNumber).once();
+
+    print("bookNumber5");
+    print(rtdb.value);
+    if (rtdb.value == null) return [];
+    final rtdbVal = Map<String, dynamic>.from(rtdb.value);
+
+    List<CambridgeIeltsTestModel> lstTest = [];
+    rtdbVal.forEach((keyUser, value) {
+      final testResult =
+          CambridgeIeltsTestModel.fromRTDB(Map<String, dynamic>.from(value));
+      print("convertSuccses");
       lstTest.add(testResult);
     });
 
