@@ -277,7 +277,7 @@ class HomeScreen extends HookConsumerWidget {
   Future readExcelNew(Excel excel) async {
     final _database = FirebaseDatabase.instance.reference();
     Map<String, dynamic> newData = {};
-    Map<int, List<String>> answerKeys = {};
+    Map<int, List> answerKeys = {};
     String sectionName = "";
     String bookNumber = "";
     String bookName = "";
@@ -285,13 +285,14 @@ class HomeScreen extends HookConsumerWidget {
     for (var file in excel.sheets.values) {
       // .where((element) => element.sheetName.startsWith("Cambridge"))) {
       if (file.sheetName.startsWith("Answer")) {
-        // for (var i = 1; i < excel.tables[file.sheetName]!.rows.length; i++) {
-        //   var row = excel.tables[file.sheetName]!.rows[i];
-        //   LineSplitter ls = const LineSplitter();
-        //   // List<String> lines = ls.convert(text);
+        for (var i = 0; i < excel.tables[file.sheetName]!.rows.length; i++) {
+          var row = excel.tables[file.sheetName]!.rows[i];
+          LineSplitter ls = const LineSplitter();
+          // List<String> lines = ls.convert(text);
 
-        //   answerKeys[i] = ls.convert(getCellValue(row[0]));
-        // }
+          answerKeys[(i + 1)] = getCellValue(row[1])
+              .split("/"); //ls.convert(getCellValue(row[1]));
+        }
       } else {
         // var sheetName = file.sheetName.split("-")[1];
         bookName = file.sheetName;
@@ -313,14 +314,14 @@ class HomeScreen extends HookConsumerWidget {
             ..eq = int.parse(getCellValue(row[3]))
             ..instruction = getCellValue(row[4])
             ..answerType = AnswerType.values.byName(getCellValue(row[5]))
-            ..answerChoice = lineSplitter.convert(getCellValue(row[6]))
-            ..answers = answerKeys;
+            ..answerChoice = lineSplitter.convert(getCellValue(row[6]));
+          // ..answers = answerKeys;
           lstQUestion.add(question);
           print("answers");
           // print(getCellValue(row[7]));
           // print(getCellValue(row[8]));
 
-          print(question.answers);
+          // print(question.answers);
           newData = <String, dynamic>{
             'bookName': file.sheetName,
             'bookNumber': int.parse(bookNumber),
@@ -333,8 +334,9 @@ class HomeScreen extends HookConsumerWidget {
                   'eq': question.eq,
                   'answerType': question.answerType.name,
                   'answerChoice': question.answerChoice,
-                  'answers': question.answers
+                  // 'answers': question.answers
                 }),
+            'answers': answerKeys,
             'time': DateTime.now().microsecondsSinceEpoch
           };
         }

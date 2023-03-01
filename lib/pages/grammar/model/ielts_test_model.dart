@@ -30,9 +30,9 @@ class CambridgeIeltsTestModel {
   late String sectionType;
   late List<IeltsTestQuestion> answerSheet;
   late DateTime writeDate;
-
+  late List answerKeys;
   CambridgeIeltsTestModel(this.bookName, this.bookNumber, this.sectionType,
-      this.answerSheet, this.writeDate);
+      this.answerSheet, this.writeDate, this.answerKeys);
   factory CambridgeIeltsTestModel.fromRTDB(Map<String, dynamic> data) {
     return CambridgeIeltsTestModel(
         data['bookName'],
@@ -44,7 +44,8 @@ class CambridgeIeltsTestModel {
             .toList(),
         data['time'] != null
             ? DateTime.fromMicrosecondsSinceEpoch(data['time'])
-            : DateTime.now());
+            : DateTime.now(),
+        data['answers']);
   }
 }
 
@@ -127,24 +128,23 @@ class IeltsTestQuestion {
   late int eq;
   late AnswerType answerType;
   late List answerChoice;
-  late Map<int, List<String>> answers;
 
   late DateTime writeDate;
   IeltsTestQuestion.empty();
   IeltsTestQuestion(this.section, this.questionContent, this.instruction,
-      this.sq, this.eq, this.answerType, this.answerChoice, this.answers);
+      this.sq, this.eq, this.answerType, this.answerChoice);
 
   factory IeltsTestQuestion.fromRTDB(Map<String, dynamic> data) {
     return IeltsTestQuestion(
-        data['section'],
-        data['question'],
-        data['instruction'],
-        data['sq'],
-        data['eq'],
-        AnswerType.values.byName(data['answerType']),
-        data['answerChoice'] ?? [], {}
-        // data['answers'] ?? {},
-        );
+      data['section'],
+      data['question'],
+      data['instruction'],
+      data['sq'],
+      data['eq'],
+      AnswerType.values.byName(data['answerType']),
+      data['answerChoice'] ?? [],
+      // data['answers'] ?? {},
+    );
   }
 }
 // class ReadingTestModel {
