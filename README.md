@@ -39,3 +39,7 @@ Band score	Raw score out of 40
 
 ## Convert online excel to markdown table
 https://tabletomarkdown.com/convert-spreadsheet-to-markdown/
+## Play asset audio
+https://www.fluttercampus.com/guide/221/play-soud-from-assets-folder-flutter/
+## How to Save Files from URL to Download Folder in Flutter
+https://www.fluttercampus.com/guide/185/how-to-save-files-from-url-to-download-folder-in-flutter/

@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:afen_ielts/common/loading_button.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_multi_check_box.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_single_fill_question.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_single_selection_rb.dart';
@@ -5,17 +9,28 @@ import 'package:afen_ielts/common_frame_practice/common_widget/afen_table_data_f
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_table_data_select.dart';
 import 'package:afen_ielts/common_frame_practice/common_widget/afen_typeAhead.dart';
 import 'package:afen_ielts/pages/grammar/model/ielts_test_model.dart';
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:afen_ielts/common/common_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:afen_ielts/pages/grammar/test/ielts_test_list_controller.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
 // pyfm061 : キャンセル規定編集
 class CambridgeIeltsTest extends HookConsumerWidget {
   CambridgeIeltsTest({Key? key, required this.bookNumber}) : super(key: key);
   int bookNumber;
+  // List<AudioPlayer> audioPlayers = List.generate(
+  //   4,
+  //   (_) => AudioPlayer()..setReleaseMode(ReleaseMode.STOP),
+  // );
+  // int selectedPlayerIdx = 0;
+  // AudioPlayer get selectedAudioPlayer => audioPlayers[selectedPlayerIdx];
+  List<StreamSubscription> streams = [];
+  final player = AudioPlayer();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(ieltsTestListController.notifier);
@@ -34,6 +49,8 @@ class CambridgeIeltsTest extends HookConsumerWidget {
     print(bookNumber);
     CambridgeIeltsTestModel testSource = controller.state.ciTestSource[0];
     var questionWidgets = getQuestionWidget(testSource.answerSheet);
+
+    // AudioPlayer player = AudioPlayer();
     return Scaffold(
         body: Padding(
       padding: const EdgeInsets.all(20),
@@ -46,6 +63,69 @@ class CambridgeIeltsTest extends HookConsumerWidget {
               "Cambridge IELTS ${bookNumber}",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
+            Row(
+              children: [
+                LoadingButton(
+                  widgetKey: "loadingButton",
+                  onPressed: () async {
+                    // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+                    await player
+                        .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+                    player.play();
+                  },
+                  textLabel: '▶',
+                ),
+                LoadingButton(
+                  widgetKey: "loadingButton",
+                  onPressed: () async {
+                    // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+                    // await player
+                    //     .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+                    player.setSpeed(1.25);
+                  },
+                  textLabel: 'x1.5',
+                ),
+                LoadingButton(
+                  widgetKey: "loadingButton",
+                  onPressed: () async {
+                    // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+                    // await player
+                    //     .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+                    player.setSpeed(1.0);
+                  },
+                  textLabel: 'x1',
+                ),
+                LoadingButton(
+                  widgetKey: "loadingButton",
+                  onPressed: () async {
+                    // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+                    // await player
+                    //     .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+                    player.seek(Duration(seconds: 40));
+                  },
+                  textLabel: 'seek',
+                ),
+                LoadingButton(
+                  widgetKey: "loadingButton",
+                  onPressed: () async {
+                    // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+                    // await player
+                    //     .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+                    player.stop();
+                  },
+                  textLabel: 'stop',
+                ),
+              ],
+            ),
+            // ElevatedButton.icon(
+            //     onPressed: () async {
+            //       // String audioasset = "assets/cambridgeiealts/2/01.mp3";
+            //       await player
+            //           .setUrl('asset:///assets/cambridgeiealts/2/01.mp3');
+            //       player.play();
+            //     },
+            //     icon: Icon(Icons.play_arrow),
+            //     label: Text("Play")),
             ListView.builder(
                 itemCount: testSource.answerSheet.length,
                 shrinkWrap: true,
